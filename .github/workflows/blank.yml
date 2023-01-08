@@ -46,7 +46,7 @@ jobs:
         
       - name: copy php
         run: | 
-          mkdir ./assets${{ matrix.name }}/bin
+          mkdir -p ./assets${{ matrix.name }}/bin
           cp -r -a -f ./php-build-scripts/bin "./assets${{ matrix.name }}/bin"
         
       - uses: actions/upload-artifact@v1
