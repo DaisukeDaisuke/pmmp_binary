@@ -45,7 +45,9 @@ jobs:
         run: ./compile.sh -t linux64 -j4 -f x86_64 ${{ matrix.option }}
         
       - name: copy php
-        run: cp -r -a -f ./php-build-scripts/bin "./assets${{ matrix.name }}/bin"
+        run: | 
+          mkdir ./assets${{ matrix.name }}/bin
+          cp -r -a -f ./php-build-scripts/bin "./assets${{ matrix.name }}/bin"
         
       - uses: actions/upload-artifact@v1
         with:
