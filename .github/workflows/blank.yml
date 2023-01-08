@@ -1,0 +1,105 @@
+on:
+  workflow_dispatch:
+    inputs:
+      tagname:
+        description: 'tagname'
+        required: true
+        default: '8.0.20'
+      createRelease:
+        description: 'If "yes", create the release.'
+        required: true
+        default: 'yes'
+
+name: Release Binaries pmmp 3
+
+jobs:
+  build-php:
+    name: Building cross compiler for android-aarch64
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+          include:
+            - option: "-g"
+              name: "-8.0"
+              branch: "stable"
+            - option: "-g"
+              name: "-8.1"
+              branch: "php/8.1"
+            # Please note that if editing the matrix, the release workflow must also be edited.
+    steps:
+      - uses: actions/checkout@v2
+        with:
+         repository: pmmp/php-build-scripts
+         path: php-build-scripts
+         ref: ${{ matrix.branch }}
+
+      - name: install module
+        run: |
+          sudo apt update &> /dev/null
+          sudo apt install -y re2c libtool libtool-bin zlib1g-dev libcurl4-openssl-dev libxml2-dev libyaml-dev libgmp-dev libzip-dev libssl-dev &> /dev/null
+          
+      - name: making aarch64 php
+        working-directory: php-build-scripts
+        run: ./compile.sh -t linux64 -j4 -f x86_64 ${{ matrix.option }}
+        
+      - name: copy php
+        run: cp -r -a -f ./php-build-scripts/bin "assets${{ matrix.name }}/bin"
+        
+      - uses: actions/upload-artifact@v1
+        with:
+          name: "assets${{ matrix.name }}"
+          path: "./assets${{ matrix.name }}"
+
+  commit-php:
+    name: release
+    needs: build-php
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.createRelease == 'yes'}}
+    steps:
+      - name: Download a Build Artifact(assets-8.0)
+        uses: actions/download-artifact@v2
+        with:
+          name: assets-8.0
+
+      - name: Download a Build Artifact(assets-8.1)
+        uses: actions/download-artifact@v2
+        with:
+          name: assets-8.1
+
+      - name: file compressions
+        run: |
+          tar -zcvf bin-8.0.tar.gz assets-8.0/bin
+          tar -zcvf bin-8.1.tar.gz assets-8.1/bin
+          zip -r -9 bin-8.0 assets-8.0/bin
+          zip -r -9 bin-8.1 assets-8.1/bin
+          
+      - name: create checksums.sha256
+        run: |
+          sha256sum "bin-8.0.tar.gz" "bin-8.1.tar.gz" "bin-8.0.zip" "bin-8.1.zip" > checksums.sha256
+          cat checksums.sha256
+          
+      - uses: actions/upload-artifact@v1
+        with:
+          name: "checksums.sha256"
+          path: "./checksums.sha256"
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.tagname }}
+          name: Release ${{ github.event.inputs.tagname }}
+          files: |
+            bin-8.0.tar.gz
+            bin-8.1.tar.gz
+            bin-8.0.zip
+            bin-8.1.zip
+            checksums.sha256
+          body: "The php version for this release is ${{ github.event.inputs.tagname }}.
+
+## warning
+
+If using ubuntu 20 or higher os, please use the official binaries.
+
+https://jenkins.pmmp.io/"
