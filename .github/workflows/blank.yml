@@ -44,15 +44,31 @@ jobs:
         working-directory: php-build-scripts
         run: ./compile.sh -t linux64 -j4 -f x86_64 ${{ matrix.option }}
         
-      - name: copy php
+        # https://doc.pmmp.io/en/rtfd/faq/installation/opcache.so.html
+      - name: fix opcache warning
+        working-directory: php-build-scripts
+        run: |
+          EXTENSION_DIR=$(find "$(pwd)/bin" -name "*debug-zts*")
+          grep -q '^extension_dir' bin/php7/bin/php.ini && sed -i'bak' "s{^extension_dir=.*{extension_dir=\"$EXTENSION_DIR\"{" bin/php7/bin/php.ini || echo "extension_dir=\"$EXTENSION_DIR\"" >> bin/php7/bin/php.ini
+
+      - name: file compressions
         run: | 
-          mkdir -p ./assets${{ matrix.name }}/bin
-          cp -r -a -f ./php-build-scripts/bin "./assets${{ matrix.name }}/bin"
-        
+          tar -zcvf bin${{ matrix.name }}.tar.gz ./php-build-scripts/bin
+          zip -r -9 bin${{ matrix.name }} ./php-build-scripts/bin
+          
+      - name: echo sha256sum
+        run: sha256sum "bin${{ matrix.name }}.tar.gz" "bin${{ matrix.name }}.zip"
+
       - uses: actions/upload-artifact@v1
         with:
-          name: "assets${{ matrix.name }}"
-          path: "./assets${{ matrix.name }}"
+          name: "bin${{ matrix.name }}.tar.gz"
+          path: "bin${{ matrix.name }}.tar.gz"
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: "bin${{ matrix.name }}.zip"
+          path: "bin${{ matrix.name }}.zip"
+          
 
   commit-php:
     name: release
@@ -60,23 +76,29 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.createRelease == 'yes'}}
     steps:
-      - name: Download a Build Artifact(assets-8.0)
+      - name: Download a Build Artifact(bin-8.0.tar.gz)
         uses: actions/download-artifact@v2
         with:
-          name: assets-8.0
+          name: bin-8.0.tar.gz
 
-      - name: Download a Build Artifact(assets-8.1)
+      - name: Download a Build Artifact(bin-8.0.zip)
         uses: actions/download-artifact@v2
         with:
-          name: assets-8.1
-
-      - name: file compressions
-        run: |
-          tar -zcvf bin-8.0.tar.gz assets-8.0/bin
-          tar -zcvf bin-8.1.tar.gz assets-8.1/bin
-          zip -r -9 bin-8.0 assets-8.0/bin
-          zip -r -9 bin-8.1 assets-8.1/bin
+          name: bin-8.0.zip
           
+      - name: Download a Build Artifact(bin-8.1.tar.gz)
+        uses: actions/download-artifact@v2
+        with:
+          name: bin-8.1.tar.gz
+
+      - name: Download a Build Artifact(bin-8.1.zip)
+        uses: actions/download-artifact@v2
+        with:
+          name: bin-8.1.zip
+          
+      - name: debug tree
+        run: tree
+
       - name: create checksums.sha256
         run: |
           sha256sum "bin-8.0.tar.gz" "bin-8.1.tar.gz" "bin-8.0.zip" "bin-8.1.zip" > checksums.sha256
