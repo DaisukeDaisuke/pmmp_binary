@@ -54,7 +54,7 @@ jobs:
       - name: file compressions
         run: | 
           tar -zcvf bin${{ matrix.name }}.tar.gz ./php-build-scripts/bin
-          zip -r -9 bin${{ matrix.name }} ./php-build-scripts/bin
+          zip -r -9 bin${{ matrix.name }}.zip ./php-build-scripts/bin
           
       - name: echo sha256sum
         run: sha256sum "bin${{ matrix.name }}.tar.gz" "bin${{ matrix.name }}.zip"
