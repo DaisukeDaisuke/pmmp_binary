@@ -54,8 +54,8 @@ jobs:
       - name: file compressions
         working-directory: php-build-scripts
         run: | 
-          tar -zcvf bin.tar.gz bin
-          zip -r -9 bin.zip bin
+          tar -zcvf bin.tar.gz bin > /dev/null
+          zip -r -9 bin.zip bin > /dev/null
 
       - name: copy compressed bin
         run: |
