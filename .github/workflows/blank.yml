@@ -52,19 +52,23 @@ jobs:
           grep -q '^extension_dir' bin/php7/bin/php.ini && sed -i'bak' "s{^extension_dir=.*{extension_dir=\"$EXTENSION_DIR\"{" bin/php7/bin/php.ini || echo "extension_dir=\"$EXTENSION_DIR\"" >> bin/php7/bin/php.ini
 
       - name: file compressions
+        working-directory: php-build-scripts
         run: | 
-          tar -zcvf bin${{ matrix.name }}.tar.gz ./php-build-scripts/bin
-          zip -r -9 bin${{ matrix.name }}.zip ./php-build-scripts/bin
+          tar -zcvf bin${{ matrix.name }}.tar.gz bin
+          zip -r -9 bin${{ matrix.name }}.zip bin
           
       - name: echo sha256sum
+        working-directory: php-build-scripts
         run: sha256sum "bin${{ matrix.name }}.tar.gz" "bin${{ matrix.name }}.zip"
 
       - uses: actions/upload-artifact@v1
+        working-directory: php-build-scripts
         with:
           name: "bin${{ matrix.name }}.tar.gz"
           path: "bin${{ matrix.name }}.tar.gz"
 
       - uses: actions/upload-artifact@v1
+        working-directory: php-build-scripts
         with:
           name: "bin${{ matrix.name }}.zip"
           path: "bin${{ matrix.name }}.zip"
