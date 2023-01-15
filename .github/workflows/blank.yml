@@ -49,26 +49,28 @@ jobs:
         working-directory: php-build-scripts
         run: |
           EXTENSION_DIR=$(find "$(pwd)/bin" -name "*debug-zts*")
-          grep -q '^extension_dir' bin/php7/bin/php.ini && sed -i'bak' "s{^extension_dir=.*{extension_dir=\"$EXTENSION_DIR\"{" bin/php7/bin/php.ini || echo "extension_dir=\"$EXTENSION_DIR\"" >> bin/php7/bin/php.ini
+          grep -q '^extension_dir' bin/php7/bin/php.ini && sed -i'bak' "s{^extension_dir=.*{extension_dir=\"$EXTENSION_DIR\"{" bin/php7/bin/php.ini || echo "extension_dir=\"$(realpath -m -q --relative-to="$(pwd)/bin/php7/bin" $EXTENSION_DIR)\"" >> bin/php7/bin/php.ini
 
       - name: file compressions
         working-directory: php-build-scripts
         run: | 
-          tar -zcvf bin${{ matrix.name }}.tar.gz bin
-          zip -r -9 bin${{ matrix.name }}.zip bin
-          
+          tar -zcvf bin.tar.gz bin
+          zip -r -9 bin.zip bin
+
+      - name: copy compressed bin
+        run: |
+          mv ./php-build-scripts/bin.tar.gz bin${{ matrix.name }}.tar.gz
+          mv ./php-build-scripts/bin.zip bin${{ matrix.name }}.zip
+
       - name: echo sha256sum
-        working-directory: php-build-scripts
         run: sha256sum "bin${{ matrix.name }}.tar.gz" "bin${{ matrix.name }}.zip"
 
       - uses: actions/upload-artifact@v1
-        working-directory: php-build-scripts
         with:
           name: "bin${{ matrix.name }}.tar.gz"
           path: "bin${{ matrix.name }}.tar.gz"
 
       - uses: actions/upload-artifact@v1
-        working-directory: php-build-scripts
         with:
           name: "bin${{ matrix.name }}.zip"
           path: "bin${{ matrix.name }}.zip"
