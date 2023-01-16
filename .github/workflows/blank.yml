@@ -42,7 +42,7 @@ jobs:
           
       - name: making aarch64 php
         working-directory: php-build-scripts
-        run: ./compile.sh -t linux64 -j4 -f x86_64 ${{ matrix.option }}
+        run: ./compile.sh ${{ matrix.option }} -t linux64 -j4 -f x86_64
         
         # https://doc.pmmp.io/en/rtfd/faq/installation/opcache.so.html
       - name: fix opcache warning
