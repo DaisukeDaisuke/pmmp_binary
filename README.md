@@ -12,3 +12,25 @@ Some server hosts use ubuntu 18 docker images and do not provide image modificat
 Therefore, official binaries supporting ubuntu 20 and above will not work, and users will need to build their own binaries.  
 
 The [panel](https://github.com/pterodactyl/panel) decompressor does not process symbolic links correctly, so binaries that do not use it are also distributed.
+
+## Q&A
+### 
+If the following error occurs, please configure cacert.pem manually.
+```
+DiscordPHP.ERROR: failed to connect to websocket,retry in 5 seconds
+{"e":"Connection to gateway.discord.gg:443 failed during TLS handshake: Unable to complete TLS handshake: SSL operation failed with code 1. OpenSSL Error messages: error:1416F086:SSL routines:tls_process_server_certificate:certificate verify failed"} []
+```
+```
+ErrorException: "file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages: error:1416F086:SSL routines:tls_process_server_certificate:certificate verify failed" (EXCEPTION)
+```
+To resolve this issue, please follow these steps:
+
+- Download the cacert.pem file from the following link:
+- https://curl.se/ca/cacert.pem
+- Upload the downloaded cacert.pem file to the server.
+ 
+https://curl.se/ca/cacert.pem
+```ini
+openssl.cafile="/path/to/cacert.pem"
+curl.cainfo="/path/to/cacert.pem"
+```
