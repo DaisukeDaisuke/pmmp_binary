@@ -26,8 +26,8 @@ ErrorException: "file_get_contents(): SSL operation failed with code 1. OpenSSL 
 To resolve this issue, please follow these steps:
 
 - Download the cacert.pem file from the following link: https://curl.se/ca/cacert.pem
-- Upload the cacert.pem file to `/bin/php7/bin/cacert.pem` on the server
-- Add the following text to `/bin/php7/bin/php.ini`
+- Upload the cacert.pem file to `bin/php7/bin/cacert.pem` on the server
+- Add the following text to `bin/php7/bin/php.ini`
 ```ini
 openssl.cafile="cacert.pem"
 curl.cainfo="cacert.pem"
