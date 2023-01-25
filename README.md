@@ -23,7 +23,14 @@ DiscordPHP.ERROR: failed to connect to websocket,retry in 5 seconds
 ```
 ErrorException: "file_get_contents(): SSL operation failed with code 1. OpenSSL Error messages: error:1416F086:SSL routines:tls_process_server_certificate:certificate verify failed" (EXCEPTION)
 ```
-To resolve this issue, please follow these steps:
+
+In many cases, as mentioned in the [link](https://github.com/pmmp/php-build-scripts/issues/70#issuecomment-1399601785), the following text can be added to `bin/php7/bin/php.ini` to solve the problem
+```ini
+openssl.cafile=/etc/ssl/cert.pem
+openssl.capath=/etc/ssl/certs
+```
+
+If the above steps do not help, please follow these steps:
 
 - Download the cacert.pem file from the following link: https://curl.se/ca/cacert.pem
 - Upload the cacert.pem file to `bin/php7/bin/cacert.pem` on the server
