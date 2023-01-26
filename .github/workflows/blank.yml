@@ -54,22 +54,14 @@ jobs:
       - name: file compressions
         working-directory: php-build-scripts
         run: | 
-          tar -zcvf bin.tar.gz bin > /dev/null
           zip -r -9 bin.zip bin > /dev/null
 
       - name: copy compressed bin
         run: |
-          mv ./php-build-scripts/bin.tar.gz bin${{ matrix.name }}.tar.gz
           mv ./php-build-scripts/bin.zip bin${{ matrix.name }}.zip
 
       - name: echo sha256sum
-        run: sha256sum "bin${{ matrix.name }}.tar.gz" "bin${{ matrix.name }}.zip"
-
-      - uses: actions/upload-artifact@v1
-        with:
-          name: "bin${{ matrix.name }}.tar.gz"
-          path: "bin${{ matrix.name }}.tar.gz"
-
+        run: sha256sum "bin${{ matrix.name }}.zip"
       - uses: actions/upload-artifact@v1
         with:
           name: "bin${{ matrix.name }}.zip"
@@ -82,32 +74,19 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.createRelease == 'yes'}}
     steps:
-      - name: Download a Build Artifact(bin-8.0.tar.gz)
-        uses: actions/download-artifact@v2
-        with:
-          name: bin-8.0.tar.gz
-
       - name: Download a Build Artifact(bin-8.0.zip)
         uses: actions/download-artifact@v2
         with:
           name: bin-8.0.zip
-          
-      - name: Download a Build Artifact(bin-8.1.tar.gz)
-        uses: actions/download-artifact@v2
-        with:
-          name: bin-8.1.tar.gz
 
       - name: Download a Build Artifact(bin-8.1.zip)
         uses: actions/download-artifact@v2
         with:
           name: bin-8.1.zip
-          
-      - name: debug tree
-        run: tree
 
       - name: create checksums.sha256
         run: |
-          sha256sum "bin-8.0.tar.gz" "bin-8.1.tar.gz" "bin-8.0.zip" "bin-8.1.zip" > checksums.sha256
+          sha256sum "bin-8.0.zip" "bin-8.1.zip" > checksums.sha256
           cat checksums.sha256
           
       - uses: actions/upload-artifact@v1
@@ -121,8 +100,6 @@ jobs:
           tag_name: ${{ github.event.inputs.tagname }}
           name: Release ${{ github.event.inputs.tagname }}
           files: |
-            bin-8.0.tar.gz
-            bin-8.1.tar.gz
             bin-8.0.zip
             bin-8.1.zip
             checksums.sha256
