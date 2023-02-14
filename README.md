@@ -2,7 +2,11 @@
 pmmp binary for ubuntu18
 ## warning
 If using ubuntu 20 or higher os, please use the official binaries.  
-https://jenkins.pmmp.io/  
+php 8.0  
+https://github.com/pmmp/PHP-Binaries/releases/tag/php-8.0-latest  
+php 8.1  
+https://github.com/pmmp/PHP-Binaries/releases/tag/php-8.1-latest  
+<!-- https://jenkins.pmmp.io/ (Not available until approximately March 1.) -->  
 
 ## overview
 The goal of this repository is to provide executable binaries for the latest pmmp on older ubuntu os using github actions.  
