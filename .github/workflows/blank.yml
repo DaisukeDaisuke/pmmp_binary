@@ -26,6 +26,7 @@ jobs:
               branch: "php/8.0"
             - option: "-g"
               name: "-8.1"
+              branch: "php/8.1"
             - option: "-g -P 5"
               name: "-8.0-PM5"
               branch: "php/8.0"
