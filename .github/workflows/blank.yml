@@ -23,9 +23,14 @@ jobs:
           include:
             - option: "-g"
               name: "-8.0"
-              branch: "stable"
+              branch: "php/8.0"
             - option: "-g"
               name: "-8.1"
+            - option: "-g -P 5"
+              name: "-8.0-PM5"
+              branch: "php/8.0"
+            - option: "-g -P 5"
+              name: "-8.1-PM5"
               branch: "php/8.1"
             # Please note that if editing the matrix, the release workflow must also be edited.
     steps:
@@ -83,10 +88,18 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: bin-8.1.zip
+      - name: Download a Build Artifact(bin-8.0-PM5.zip)
+        uses: actions/download-artifact@v2
+        with:
+          name: bin-8.0-PM5.zip
+      - name: Download a Build Artifact(bin-8.1-PM5.zip)
+        uses: actions/download-artifact@v2
+        with:
+          name: bin-8.1-PM5.zip
 
       - name: create checksums.sha256
         run: |
-          sha256sum "bin-8.0.zip" "bin-8.1.zip" > checksums.sha256
+          sha256sum "bin-8.0.zip" "bin-8.1.zip" "bin-8.0-PM5.zip" "bin-8.1-PM5.zip" > checksums.sha256
           cat checksums.sha256
           sha256sum checksums.sha256
           
@@ -103,6 +116,8 @@ jobs:
           files: |
             bin-8.0.zip
             bin-8.1.zip
+            bin-8.0-PM5.zip
+            bin-8.1-PM5.zip
             checksums.sha256
           body: "The php version for this release is ${{ github.event.inputs.tagname }}.
 
