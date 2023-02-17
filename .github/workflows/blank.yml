@@ -15,7 +15,7 @@ name: Release Binaries pmmp 3
 jobs:
   build-php:
     name: Building cross compiler for android-aarch64
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     strategy:
       fail-fast: true
