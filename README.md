@@ -1,21 +1,12 @@
 # pmmp_binary
-pmmp binary for ubuntu18
+pmmp binary for panel  
+(ubuntu20)
 ## warning
-If using ubuntu 20 or higher os, please use the official binaries.  
+Use official binaries as much as possible. 
 php 8.0  
 https://github.com/pmmp/PHP-Binaries/releases/tag/php-8.0-latest  
 php 8.1  
 https://github.com/pmmp/PHP-Binaries/releases/tag/php-8.1-latest  
-<!-- https://jenkins.pmmp.io/ (Not available until approximately March 1.) -->  
-
-## overview
-The goal of this repository is to provide executable binaries for the latest pmmp on older ubuntu os using github actions.  
-The pmmp binaries for ubuntu18 will be maintained until March 2023.  
-  
-Some server hosts use ubuntu 18 docker images and do not provide image modification features or Linux bash shell access.  
-Therefore, official binaries supporting ubuntu 20 and above will not work, and users will need to build their own binaries.  
-
-The [panel](https://github.com/pterodactyl/panel) decompressor does not process symbolic links correctly, so binaries that do not use it are also distributed.
 
 ## Q&A
 ### 
